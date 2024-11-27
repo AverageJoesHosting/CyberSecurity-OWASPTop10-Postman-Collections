@@ -1,0 +1,57 @@
+{
+    "info": {
+      "name": "Excessive API Requests",
+      "description": "Tests to identify vulnerabilities where APIs do not restrict the number of requests, allowing potential denial of service (DoS).",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Send Multiple Requests to an Endpoint",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{authToken}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/resource-intensive-endpoint",
+            "host": ["{{baseUrl}}"],
+            "path": ["resource-intensive-endpoint"]
+          }
+        },
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "exec": [
+                "// Generate multiple requests to test rate-limiting",
+                "for (let i = 0; i < 100; i++) {",
+                "    pm.sendRequest(pm.request, function (err, res) {",
+                "        if (err) console.log('Error:', err);",
+                "        else console.log('Response:', res.status);",
+                "    });",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that rate-limiting is enforced",
+                "pm.test('Rate-limiting enforced', function () {",
+                "    pm.response.to.have.status.oneOf([429, 503]);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "authToken", "value": "your-auth-token" }
+    ]
+  }
+  

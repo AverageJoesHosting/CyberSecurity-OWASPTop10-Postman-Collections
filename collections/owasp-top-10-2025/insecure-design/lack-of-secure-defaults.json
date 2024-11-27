@@ -1,0 +1,75 @@
+{
+    "info": {
+      "name": "Lack of Secure Defaults",
+      "description": "Tests to identify insecure default configurations or options that could compromise application security.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Default Admin Password Test",
+        "request": {
+          "method": "POST",
+          "header": [],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"username\": \"admin\", \"password\": \"admin\" }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure default credentials are rejected",
+                "pm.test('Default credentials rejected', function () {",
+                "    pm.response.to.have.status(401);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Invalid credentials');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Default API Key Test",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "x-api-key", "value": "default-api-key" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure-endpoint",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure-endpoint"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure default API keys are rejected",
+                "pm.test('Default API key rejected', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

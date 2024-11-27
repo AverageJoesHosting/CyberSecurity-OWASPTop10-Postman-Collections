@@ -1,0 +1,48 @@
+{
+    "info": {
+      "name": "Missing Multi-Factor Authentication (MFA)",
+      "description": "Tests to identify endpoints or accounts that lack multi-factor authentication for sensitive actions.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test Sensitive Action Without MFA",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{authToken}}" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"action\": \"transfer_funds\", \"amount\": 1000 }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/perform-sensitive-action",
+            "host": ["{{baseUrl}}"],
+            "path": ["perform-sensitive-action"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that MFA is required for sensitive actions",
+                "pm.test('Sensitive action requires MFA', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'MFA required');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "authToken", "value": "your-auth-token" }
+    ]
+  }
+  

@@ -1,0 +1,44 @@
+{
+    "info": {
+      "name": "Log Tampering Detection",
+      "description": "Tests to validate that security logs cannot be tampered with or deleted by unauthorized users.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Attempt Unauthorized Log Deletion",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}" }
+          ],
+          "url": {
+            "raw": "{{logApiUrl}}/logs/12345",
+            "host": ["{{logApiUrl}}"],
+            "path": ["logs", "12345"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate unauthorized log deletion is blocked",
+                "pm.test('Unauthorized log deletion blocked', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "logApiUrl", "value": "https://logs.example.com" },
+      { "key": "userToken", "value": "your-user-token" }
+    ]
+  }
+  

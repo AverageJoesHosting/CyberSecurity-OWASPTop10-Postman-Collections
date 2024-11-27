@@ -1,0 +1,41 @@
+{
+    "info": {
+      "name": "Software Package Integrity Validation",
+      "description": "Tests to validate the integrity of software packages and ensure they have not been tampered with.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Verify Package Integrity with Hash",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/downloads/software-package",
+            "host": ["{{baseUrl}}"],
+            "path": ["downloads", "software-package"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate downloaded package hash matches the expected hash",
+                "pm.test('Package integrity verified', function () {",
+                "    const actualHash = pm.response.text();",
+                "    const expectedHash = 'abc123'; // Replace with the actual hash",
+                "    pm.expect(actualHash).to.equal(expectedHash);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

@@ -1,0 +1,75 @@
+{
+    "info": {
+      "name": "Default Configuration Checks",
+      "description": "Tests to identify endpoints using default or insecure configurations, such as default credentials or settings.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check Default Admin Credentials",
+        "request": {
+          "method": "POST",
+          "header": [],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"username\": \"admin\", \"password\": \"admin\" }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that default admin credentials are rejected",
+                "pm.test('Default admin credentials rejected', function () {",
+                "    pm.response.to.have.status(401);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Invalid credentials');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check Default API Keys",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "x-api-key", "value": "default-api-key" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure-endpoint",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure-endpoint"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that default API keys are not accepted",
+                "pm.test('Default API key rejected', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

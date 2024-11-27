@@ -1,0 +1,41 @@
+{
+    "info": {
+      "name": "Outdated Components Management",
+      "description": "Tests to identify outdated or mismanaged components within the application.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check for Outdated Third-Party Components",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/components",
+            "host": ["{{baseUrl}}"],
+            "path": ["components"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate components are up-to-date",
+                "pm.test('All components are up-to-date', function () {",
+                "    const jsonData = pm.response.json();",
+                "    const outdatedComponents = jsonData.components.filter(component => component.isOutdated);",
+                "    pm.expect(outdatedComponents.length).to.equal(0);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

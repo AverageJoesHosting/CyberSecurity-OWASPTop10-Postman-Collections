@@ -1,0 +1,49 @@
+{
+    "info": {
+      "name": "Property Authorization Bypass",
+      "description": "Tests to ensure that users cannot bypass property-level authorization checks via parameter tampering or unintended behaviors.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Tamper with Sensitive Property",
+        "request": {
+          "method": "PATCH",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}" },
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"email\": \"unauthorized@example.com\", \"isVerified\": true }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/users/12345",
+            "host": ["{{baseUrl}}"],
+            "path": ["users", "12345"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that sensitive property modification is blocked",
+                "pm.test('Sensitive property modification is blocked', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized modification');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "userToken", "value": "your-user-token" }
+    ]
+  }
+  

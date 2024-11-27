@@ -1,0 +1,60 @@
+{
+    "info": {
+      "name": "Missing Rate-Limiting Checks",
+      "description": "Tests to identify endpoints that lack rate-limiting protections, making them susceptible to abuse.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Abuse Endpoint Without Rate-Limiting",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{authToken}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/reset-password",
+            "host": ["{{baseUrl}}"],
+            "path": ["reset-password"]
+          },
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"email\": \"user@example.com\" }"
+          }
+        },
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "exec": [
+                "// Send multiple requests to simulate abuse",
+                "for (let i = 0; i < 50; i++) {",
+                "    pm.sendRequest(pm.request, function (err, res) {",
+                "        if (res) console.log('Request:', i, 'Status:', res.status);",
+                "    });",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate rate-limiting response",
+                "pm.test('Rate-limiting enforced', function () {",
+                "    pm.response.to.have.status(429);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "authToken", "value": "your-auth-token" }
+    ]
+  }
+  

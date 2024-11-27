@@ -1,0 +1,82 @@
+{
+    "info": {
+      "name": "Insecure Workflow Validation",
+      "description": "Tests to identify insecure workflows that could lead to vulnerabilities, such as improper privilege escalation or unverified critical actions.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Privilege Escalation Test",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"role\": \"admin\" }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/update-role",
+            "host": ["{{baseUrl}}"],
+            "path": ["update-role"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate privilege escalation attempt is blocked",
+                "pm.test('Privilege escalation blocked', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized action');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Unverified Critical Action Test",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"action\": \"delete_all_users\" }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/execute-action",
+            "host": ["{{baseUrl}}"],
+            "path": ["execute-action"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure critical actions require verification",
+                "pm.test('Critical action requires verification', function () {",
+                "    pm.response.to.have.status(400);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Verification required');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "userToken", "value": "your-user-token" }
+    ]
+  }
+  

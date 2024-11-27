@@ -1,0 +1,68 @@
+{
+    "info": {
+      "name": "Insecure Update Mechanisms",
+      "description": "Tests to detect insecure update mechanisms that lack verification of update sources or integrity.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test Update Source Verification",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/updates/latest",
+            "host": ["{{baseUrl}}"],
+            "path": ["updates", "latest"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate the update source is verified",
+                "pm.test('Update source verified', function () {",
+                "    const headers = pm.response.headers;",
+                "    pm.expect(headers.get('X-Update-Signed')).to.equal('true');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Verify Update File Hash",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/updates/download",
+            "host": ["{{baseUrl}}"],
+            "path": ["updates", "download"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate update file hash matches expected hash",
+                "pm.test('Update file hash matches', function () {",
+                "    const actualHash = pm.response.text();",
+                "    const expectedHash = 'def456'; // Replace with the actual hash",
+                "    pm.expect(actualHash).to.equal(expectedHash);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

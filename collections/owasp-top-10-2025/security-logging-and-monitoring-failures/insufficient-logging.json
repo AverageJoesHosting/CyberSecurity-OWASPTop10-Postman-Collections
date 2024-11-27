@@ -1,0 +1,61 @@
+{
+    "info": {
+      "name": "Insufficient Logging",
+      "description": "Tests to identify endpoints that fail to log important security events.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Verify Login Event Logging",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"username\": \"testuser\", \"password\": \"wrongpassword\" }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate failed login attempt is logged",
+                "pm.test('Failed login attempt logged', function () {",
+                "    pm.response.to.have.status(401);",
+                "    // Assuming there's an API to check logs",
+                "    pm.sendRequest({",
+                "        url: '{{logApiUrl}}/logs?event=failed_login',",
+                "        method: 'GET',",
+                "        header: { 'Authorization': 'Bearer {{adminToken}}' }",
+                "    }, function (err, res) {",
+                "        if (err) console.log(err);",
+                "        pm.expect(res.status).to.equal(200);",
+                "        const logData = res.json();",
+                "        pm.expect(logData.logs).to.include.something.that.deep.includes({",
+                "            username: 'testuser',",
+                "            event: 'failed_login'",
+                "        });",
+                "    });",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "logApiUrl", "value": "https://logs.example.com" },
+      { "key": "adminToken", "value": "your-admin-token" }
+    ]
+  }
+  

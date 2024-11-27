@@ -1,0 +1,65 @@
+{
+    "info": {
+      "name": "Missing Security Headers",
+      "description": "Tests to identify missing or misconfigured security headers, such as CSP, X-Content-Type-Options, and HSTS.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check for Missing CSP Header",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}",
+            "host": ["{{baseUrl}}"],
+            "path": []
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that the Content-Security-Policy header is present",
+                "pm.test('CSP header is present', function () {",
+                "    pm.response.to.have.header('Content-Security-Policy');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check for Missing HSTS Header",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}",
+            "host": ["{{baseUrl}}"],
+            "path": []
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that the Strict-Transport-Security header is present",
+                "pm.test('HSTS header is present', function () {",
+                "    pm.response.to.have.header('Strict-Transport-Security');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

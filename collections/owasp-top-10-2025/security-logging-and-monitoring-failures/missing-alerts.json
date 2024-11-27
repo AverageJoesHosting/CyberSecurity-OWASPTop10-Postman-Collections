@@ -1,0 +1,61 @@
+{
+    "info": {
+      "name": "Missing Alerts",
+      "description": "Tests to identify failure to generate alerts for critical security events.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test Alert for Suspicious Activity",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"action\": \"delete_all_users\" }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/perform-critical-action",
+            "host": ["{{baseUrl}}"],
+            "path": ["perform-critical-action"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that an alert is generated for the critical action",
+                "pm.test('Alert generated for critical action', function () {",
+                "    pm.response.to.have.status(403);",
+                "    // Assuming there's an API to check alerts",
+                "    pm.sendRequest({",
+                "        url: '{{alertApiUrl}}/alerts?severity=critical',",
+                "        method: 'GET',",
+                "        header: { 'Authorization': 'Bearer {{adminToken}}' }",
+                "    }, function (err, res) {",
+                "        if (err) console.log(err);",
+                "        pm.expect(res.status).to.equal(200);",
+                "        const alertData = res.json();",
+                "        pm.expect(alertData.alerts).to.include.something.that.deep.includes({",
+                "            action: 'delete_all_users',",
+                "            severity: 'critical'",
+                "        });",
+                "    });",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "alertApiUrl", "value": "https://alerts.example.com" },
+      { "key": "adminToken", "value": "your-admin-token" }
+    ]
+  }
+  

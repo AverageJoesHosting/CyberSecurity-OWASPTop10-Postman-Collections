@@ -1,0 +1,48 @@
+{
+    "info": {
+      "name": "Data Tampering Validation",
+      "description": "Tests to identify vulnerabilities in data integrity, including unauthorized modifications to sensitive data.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Verify Unauthorized Data Modification",
+        "request": {
+          "method": "PUT",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"balance\": 1000000 }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/accounts/12345",
+            "host": ["{{baseUrl}}"],
+            "path": ["accounts", "12345"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate unauthorized data modification is rejected",
+                "pm.test('Unauthorized data modification blocked', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "userToken", "value": "your-user-token" }
+    ]
+  }
+  

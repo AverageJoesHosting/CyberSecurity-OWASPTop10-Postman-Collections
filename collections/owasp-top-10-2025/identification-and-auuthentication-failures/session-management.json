@@ -1,0 +1,72 @@
+{
+    "info": {
+      "name": "Session Management Flaws",
+      "description": "Tests to detect session management vulnerabilities, including improper expiration and lack of secure flags.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test Session Expiration",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{authToken}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/account-info",
+            "host": ["{{baseUrl}}"],
+            "path": ["account-info"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that session expires after inactivity",
+                "pm.test('Session has expired', function () {",
+                "    pm.response.to.have.status(401);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Session expired');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test Secure Session Cookie",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate secure and HTTP-only flags on session cookies",
+                "pm.test('Session cookies have secure flags', function () {",
+                "    const cookies = pm.cookies;",
+                "    pm.expect(cookies).to.have.property('Secure');",
+                "    pm.expect(cookies).to.have.property('HttpOnly');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "authToken", "value": "your-auth-token" }
+    ]
+  }
+  

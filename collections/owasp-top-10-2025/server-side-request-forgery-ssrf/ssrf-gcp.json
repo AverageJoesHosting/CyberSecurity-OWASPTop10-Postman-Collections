@@ -1,0 +1,47 @@
+{
+    "info": {
+      "name": "SSRF in GCP Services",
+      "description": "Tests to identify SSRF vulnerabilities targeting GCP-specific resources, such as metadata endpoints.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Access GCP Metadata",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"url\": \"http://metadata.google.internal/computeMetadata/v1/\" }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/fetch-resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["fetch-resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate access to GCP metadata is blocked",
+                "pm.test('Access to GCP metadata is blocked', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized access');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

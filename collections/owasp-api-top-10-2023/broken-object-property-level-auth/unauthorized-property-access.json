@@ -1,0 +1,44 @@
+{
+    "info": {
+      "name": "Unauthorized Property Access",
+      "description": "Tests to validate that users cannot view object properties they do not have access to.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Access Restricted Property",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/users/12345",
+            "host": ["{{baseUrl}}"],
+            "path": ["users", "12345"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that restricted property is not included in the response",
+                "pm.test('Restricted property is not visible', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.not.have.property('isAdmin');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "userToken", "value": "your-user-token" }
+    ]
+  }
+  
