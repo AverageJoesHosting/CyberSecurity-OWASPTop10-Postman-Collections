@@ -1,0 +1,111 @@
+{
+    "info": {
+      "name": "Cloud Security - Data Security",
+      "description": "Tests for data encryption at rest and in transit, as well as key management and sensitive data handling.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate Encryption at Rest",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{adminToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/data/encryption-status?resourceId={{resourceId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["data", "encryption-status"],
+            "query": [
+              { "key": "resourceId", "value": "{{resourceId}}" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate encryption status is enabled",
+                "pm.test('Encryption at rest is enabled', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('encryption', 'enabled');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check Data Encryption in Transit",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/data/secure-transfer",
+            "host": ["{{baseUrl}}"],
+            "path": ["data", "secure-transfer"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure data is transmitted over HTTPS",
+                "pm.test('Data is transmitted securely', function () {",
+                "    pm.expect(pm.request.url.protocol).to.eql('https');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Validate Key Management System (KMS)",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{adminToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/keys/status?keyId={{keyId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["keys", "status"],
+            "query": [
+              { "key": "keyId", "value": "{{keyId}}" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that the KMS key is active",
+                "pm.test('KMS key is active', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('status', 'active');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "adminToken", "value": "admin-access-token" },
+      { "key": "userToken", "value": "user-access-token" },
+      { "key": "resourceId", "value": "data-resource-001" },
+      { "key": "keyId", "value": "kms-key-12345" }
+    ]
+  }
+  

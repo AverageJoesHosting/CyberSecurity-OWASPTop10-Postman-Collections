@@ -1,0 +1,90 @@
+{
+    "id": "staging-environment",
+    "name": "Staging Environment",
+    "values": [
+      {
+        "key": "baseUrl",
+        "value": "https://api.staging.example.com",
+        "enabled": true
+      },
+      {
+        "key": "authToken",
+        "value": "your-staging-auth-token",
+        "enabled": true
+      },
+      {
+        "key": "apiKey",
+        "value": "your-staging-api-key",
+        "enabled": true
+      },
+      {
+        "key": "userToken",
+        "value": "your-staging-user-token",
+        "enabled": true
+      },
+      {
+        "key": "adminToken",
+        "value": "your-staging-admin-token",
+        "enabled": true
+      },
+      {
+        "key": "awsBaseUrl",
+        "value": "https://aws.staging.example.com",
+        "enabled": true
+      },
+      {
+        "key": "awsSignature",
+        "value": "your-staging-aws-signature",
+        "enabled": true
+      },
+      {
+        "key": "bucketName",
+        "value": "staging-bucket",
+        "enabled": true
+      },
+      {
+        "key": "azureBaseUrl",
+        "value": "https://management.azure.com",
+        "enabled": true
+      },
+      {
+        "key": "azureToken",
+        "value": "your-staging-azure-token",
+        "enabled": true
+      },
+      {
+        "key": "subscriptionId",
+        "value": "your-staging-subscription-id",
+        "enabled": true
+      },
+      {
+        "key": "resourceGroupName",
+        "value": "your-staging-resource-group",
+        "enabled": true
+      },
+      {
+        "key": "gcpToken",
+        "value": "your-staging-gcp-token",
+        "enabled": true
+      },
+      {
+        "key": "projectId",
+        "value": "your-staging-project-id",
+        "enabled": true
+      },
+      {
+        "key": "ibmToken",
+        "value": "your-staging-ibm-token",
+        "enabled": true
+      },
+      {
+        "key": "accountId",
+        "value": "your-staging-account-id",
+        "enabled": true
+      }
+    ],
+    "_postman_variable_scope": "environment",
+    "_postman_exported_at": "2024-11-27T00:00:00.000Z",
+    "_postman_exported_using": "Postman/10.0.0"
+  }
+  

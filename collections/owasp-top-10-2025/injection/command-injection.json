@@ -1,0 +1,52 @@
+{
+    "info": {
+      "name": "Injection - Command Injection",
+      "description": "Tests for command injection vulnerabilities in API endpoints.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test Command Injection in Query Parameter",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/api/system?cmd=ls; cat /etc/passwd",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "system"],
+            "query": [
+              {
+                "key": "cmd",
+                "value": "ls; cat /etc/passwd"
+              }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that the API does not execute system commands",
+                "pm.test('API does not allow command injection', function () {",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.include('/etc/passwd');",
+                "});",
+                "",
+                "// Log response for manual inspection",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      }
+    ]
+  }
+  

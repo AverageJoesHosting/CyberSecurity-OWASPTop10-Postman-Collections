@@ -1,0 +1,84 @@
+{
+    "info": {
+      "name": "AWS Security Tests",
+      "description": "Postman collection for testing security configurations in AWS, including IAM roles, S3 buckets, and KMS keys.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate IAM Role Policies",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "X-Amz-Date", "value": "{{timestamp}}" },
+            { "key": "Authorization", "value": "{{awsSignature}}" }
+          ],
+          "url": {
+            "raw": "{{awsBaseUrl}}/iam/role/{{roleName}}/policies",
+            "host": ["{{awsBaseUrl}}"],
+            "path": ["iam", "role", "{{roleName}}", "policies"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate IAM role policies are retrieved",
+                "pm.test('IAM role policies retrieved', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.Policies).to.be.an('array');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check S3 Bucket Configuration",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "{{awsSignature}}" }
+          ],
+          "url": {
+            "raw": "{{awsBaseUrl}}/s3/{{bucketName}}?acl",
+            "host": ["{{awsBaseUrl}}"],
+            "path": ["s3", "{{bucketName}}"],
+            "query": [
+              { "key": "acl", "value": "" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate bucket ACL is configured securely",
+                "pm.test('S3 bucket ACL is secure', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.Grants).to.be.an('array');",
+                "    jsonData.Grants.forEach(grant => {",
+                "        pm.expect(grant.Grantee).to.not.have.property('URI', 'http://acs.amazonaws.com/groups/global/AllUsers');",
+                "    });",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "awsBaseUrl", "value": "https://your-aws-api-url" },
+      { "key": "awsSignature", "value": "your-aws-auth-signature" },
+      { "key": "timestamp", "value": "current-timestamp" },
+      { "key": "roleName", "value": "your-iam-role-name" },
+      { "key": "bucketName", "value": "your-s3-bucket-name" }
+    ]
+  }
+  

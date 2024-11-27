@@ -1,0 +1,56 @@
+{
+    "info": {
+      "name": "General API Security - Rate Limiting",
+      "description": "Postman collection to test API rate limiting and abuse prevention mechanisms.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test Rate Limiting Enforcement",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{authToken}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "exec": [
+                "// Send multiple requests to trigger rate limit",
+                "for (let i = 0; i < 100; i++) {",
+                "    pm.sendRequest(pm.request, function (err, res) {",
+                "        if (res) console.log('Status:', res.status);",
+                "    });",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate rate limiting response",
+                "pm.test('Rate limiting enforced', function () {",
+                "    pm.response.to.have.status(429);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "authToken", "value": "your-valid-token" }
+    ]
+  }
+  

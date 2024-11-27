@@ -1,0 +1,103 @@
+{
+    "info": {
+      "name": "Authentication Tests Template",
+      "description": "Template for reusable authentication test cases, including token validation and API key enforcement.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate Token Authentication",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{authToken}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate token authentication",
+                "pm.test('Valid token grants access', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('message', 'Access granted');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test API Key Authentication",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "x-api-key", "value": "{{apiKey}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate API key authentication",
+                "pm.test('Valid API key grants access', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('message', 'Access granted');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Unauthorized Access Test",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/secure/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate unauthorized access is denied",
+                "pm.test('Unauthorized access is denied', function () {",
+                "    pm.response.to.have.status(401);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "authToken", "value": "your-auth-token" },
+      { "key": "apiKey", "value": "your-api-key" }
+    ]
+  }
+  

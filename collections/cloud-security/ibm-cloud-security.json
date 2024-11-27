@@ -1,0 +1,112 @@
+{
+    "info": {
+      "name": "IBM Cloud Security Tests",
+      "description": "Postman collection for testing security configurations in IBM Cloud, including resource access policies, COS bucket security, and encryption keys.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate Resource Access Policies",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{ibmToken}}" }
+          ],
+          "url": {
+            "raw": "https://iam.cloud.ibm.com/v1/policies?accountId={{accountId}}",
+            "host": ["iam.cloud.ibm.com"],
+            "path": ["v1", "policies"],
+            "query": [
+              { "key": "accountId", "value": "{{accountId}}" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate resource access policies are retrieved",
+                "pm.test('Resource access policies retrieved', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.policies).to.be.an('array');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check COS Bucket Configuration",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{ibmToken}}" }
+          ],
+          "url": {
+            "raw": "https://s3.us.cloud-object-storage.appdomain.cloud/{{bucketName}}?acl",
+            "host": ["s3.us.cloud-object-storage.appdomain.cloud"],
+            "path": ["{{bucketName}}"],
+            "query": [
+              { "key": "acl", "value": "" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate COS bucket ACL is secure",
+                "pm.test('COS bucket ACL is secure', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const xmlResponse = pm.response.text();",
+                "    pm.expect(xmlResponse).to.not.include('<URI>http://acs.amazonaws.com/groups/global/AllUsers</URI>');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Validate Encryption Key in Key Protect",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{ibmToken}}" }
+          ],
+          "url": {
+            "raw": "https://keyprotect.us-south.bluemix.net/api/v2/keys/{{keyId}}",
+            "host": ["keyprotect.us-south.bluemix.net"],
+            "path": ["api", "v2", "keys", "{{keyId}}"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate encryption key status",
+                "pm.test('Encryption key is active', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.resources[0]).to.have.property('state', 'Active');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "ibmToken", "value": "your-ibm-access-token" },
+      { "key": "accountId", "value": "your-account-id" },
+      { "key": "bucketName", "value": "your-cos-bucket-name" },
+      { "key": "keyId", "value": "your-encryption-key-id" }
+    ]
+  }
+  

@@ -1,0 +1,94 @@
+{
+    "info": {
+      "name": "Injection - SQL Injection",
+      "description": "Tests for SQL injection vulnerabilities in API endpoints.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test SQL Injection in GET Parameter",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/api/users?id=1' OR '1'='1",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "users"],
+            "query": [
+              {
+                "key": "id",
+                "value": "1' OR '1'='1"
+              }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that the API does not return all rows",
+                "pm.test('API does not allow SQL Injection', function () {",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.include('SELECT');",
+                "    pm.expect(responseBody).not.to.include('syntax error');",
+                "});",
+                "",
+                "// Log the response for manual review",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test SQL Injection in POST Body",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"admin' OR '1'='1\",\n  \"password\": \"password\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/api/auth/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "auth", "login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that the API does not allow login bypass via SQL Injection",
+                "pm.test('Login bypass via SQL Injection is not allowed', function () {",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.include('Welcome');",
+                "    pm.expect(pm.response.code).to.eql(401);",
+                "});",
+                "",
+                "// Log the response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      }
+    ]
+  }
+  

@@ -1,0 +1,90 @@
+{
+    "id": "production-environment",
+    "name": "Production Environment",
+    "values": [
+      {
+        "key": "baseUrl",
+        "value": "https://api.production.example.com",
+        "enabled": true
+      },
+      {
+        "key": "authToken",
+        "value": "your-production-auth-token",
+        "enabled": true
+      },
+      {
+        "key": "apiKey",
+        "value": "your-production-api-key",
+        "enabled": true
+      },
+      {
+        "key": "userToken",
+        "value": "your-production-user-token",
+        "enabled": true
+      },
+      {
+        "key": "adminToken",
+        "value": "your-production-admin-token",
+        "enabled": true
+      },
+      {
+        "key": "awsBaseUrl",
+        "value": "https://aws.production.example.com",
+        "enabled": true
+      },
+      {
+        "key": "awsSignature",
+        "value": "your-production-aws-signature",
+        "enabled": true
+      },
+      {
+        "key": "bucketName",
+        "value": "production-bucket",
+        "enabled": true
+      },
+      {
+        "key": "azureBaseUrl",
+        "value": "https://management.azure.com",
+        "enabled": true
+      },
+      {
+        "key": "azureToken",
+        "value": "your-production-azure-token",
+        "enabled": true
+      },
+      {
+        "key": "subscriptionId",
+        "value": "your-production-subscription-id",
+        "enabled": true
+      },
+      {
+        "key": "resourceGroupName",
+        "value": "your-production-resource-group",
+        "enabled": true
+      },
+      {
+        "key": "gcpToken",
+        "value": "your-production-gcp-token",
+        "enabled": true
+      },
+      {
+        "key": "projectId",
+        "value": "your-production-project-id",
+        "enabled": true
+      },
+      {
+        "key": "ibmToken",
+        "value": "your-production-ibm-token",
+        "enabled": true
+      },
+      {
+        "key": "accountId",
+        "value": "your-production-account-id",
+        "enabled": true
+      }
+    ],
+    "_postman_variable_scope": "environment",
+    "_postman_exported_at": "2024-11-27T00:00:00.000Z",
+    "_postman_exported_using": "Postman/10.0.0"
+  }
+  

@@ -1,0 +1,126 @@
+{
+    "info": {
+      "name": "Cryptographic Failures - Unencrypted Data",
+      "description": "Tests for sensitive data exposed in plain text during API requests or responses.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check for Sensitive Data in Response Body",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"test_user\",\n  \"password\": \"test_password\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure sensitive data is not returned in plain text",
+                "pm.test('Response body does not expose sensitive data', function () {",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.match(/test_password|access_token|api_key|secret_key/i);",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check for Plain Text Password in Response",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"test_user\",\n  \"password\": \"test_password\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/register",
+            "host": ["{{baseUrl}}"],
+            "path": ["register"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure plain text passwords are not exposed in responses",
+                "pm.test('No plain text passwords in response', function () {",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.include('test_password');",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Ensure Data Is Encrypted in Transit",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/data",
+            "host": ["{{baseUrl}}"],
+            "path": ["data"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure HTTPS is used for secure data transmission",
+                "pm.test('Request uses HTTPS', function () {",
+                "    const protocol = pm.request.url.protocol;",
+                "    pm.expect(protocol).to.eql('https');",
+                "});",
+                "",
+                "// Log request protocol for debugging",
+                "console.log('Request Protocol:', pm.request.url.protocol);"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      }
+    ]
+  }
+  

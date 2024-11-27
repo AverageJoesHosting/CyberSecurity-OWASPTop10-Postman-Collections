@@ -1,0 +1,74 @@
+{
+    "info": {
+      "name": "General API Security - Error Handling",
+      "description": "Postman collection to validate error responses and ensure no sensitive information is disclosed.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate Generic Error Responses",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/invalid/endpoint",
+            "host": ["{{baseUrl}}"],
+            "path": ["invalid", "endpoint"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate a generic error response is returned",
+                "pm.test('Generic error response returned', function () {",
+                "    pm.response.to.have.status(404);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error');",
+                "    pm.expect(jsonData.error).to.not.include.any.keys(['stacktrace', 'internal']);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test SQL Error Handling",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/users?filter=' OR '1'='1",
+            "host": ["{{baseUrl}}"],
+            "path": ["users"],
+            "query": [
+              { "key": "filter", "value": "' OR '1'='1" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate no SQL error details are leaked",
+                "pm.test('SQL error details not exposed', function () {",
+                "    pm.response.to.have.status(400);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error');",
+                "    pm.expect(jsonData.error).to.not.include.any.keys(['SQL', 'query', 'database']);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

@@ -1,0 +1,111 @@
+{
+    "info": {
+      "name": "GCP Security Tests",
+      "description": "Postman collection for testing security configurations in Google Cloud Platform (GCP), including IAM policies, storage buckets, and encryption keys.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate IAM Policies",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{gcpToken}}" }
+          ],
+          "url": {
+            "raw": "https://cloudresourcemanager.googleapis.com/v1/projects/{{projectId}}/iamPolicy",
+            "host": ["cloudresourcemanager.googleapis.com"],
+            "path": ["v1", "projects", "{{projectId}}", "iamPolicy"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate IAM policies are retrieved successfully",
+                "pm.test('IAM policies retrieved successfully', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('bindings');",
+                "    pm.expect(jsonData.bindings).to.be.an('array');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check Cloud Storage Bucket Configuration",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{gcpToken}}" }
+          ],
+          "url": {
+            "raw": "https://storage.googleapis.com/storage/v1/b/{{bucketName}}",
+            "host": ["storage.googleapis.com"],
+            "path": ["storage", "v1", "b", "{{bucketName}}"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate storage bucket is configured securely",
+                "pm.test('Storage bucket is configured securely', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('iamConfiguration');",
+                "    pm.expect(jsonData.iamConfiguration).to.have.property('uniformBucketLevelAccess');",
+                "    pm.expect(jsonData.iamConfiguration.uniformBucketLevelAccess.enabled).to.be.true;",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Validate Encryption Key in Cloud KMS",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{gcpToken}}" }
+          ],
+          "url": {
+            "raw": "https://cloudkms.googleapis.com/v1/projects/{{projectId}}/locations/{{location}}/keyRings/{{keyRingName}}/cryptoKeys/{{keyName}}",
+            "host": ["cloudkms.googleapis.com"],
+            "path": ["v1", "projects", "{{projectId}}", "locations", "{{location}}", "keyRings", "{{keyRingName}}", "cryptoKeys", "{{keyName}}"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate encryption key status",
+                "pm.test('Encryption key is active', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('state', 'ENABLED');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "gcpToken", "value": "your-gcp-access-token" },
+      { "key": "projectId", "value": "your-project-id" },
+      { "key": "bucketName", "value": "your-storage-bucket-name" },
+      { "key": "location", "value": "global" },
+      { "key": "keyRingName", "value": "your-key-ring-name" },
+      { "key": "keyName", "value": "your-encryption-key-name" }
+    ]
+  }
+  

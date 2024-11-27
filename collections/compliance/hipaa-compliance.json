@@ -1,0 +1,82 @@
+{
+    "info": {
+      "name": "Compliance - HIPAA",
+      "description": "Tests for HIPAA compliance, including PHI security and audit trails.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Access PHI with Proper Authorization",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/health/records?patientId={{patientId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["health", "records"],
+            "query": [
+              { "key": "patientId", "value": "{{patientId}}" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate PHI is returned securely",
+                "pm.test('PHI access authorized', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('patientData');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Attempt Unauthorized PHI Access",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{unauthorizedToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/health/records?patientId={{patientId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["health", "records"],
+            "query": [
+              { "key": "patientId", "value": "{{patientId}}" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate unauthorized access is denied",
+                "pm.test('PHI access unauthorized', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "userToken", "value": "your-user-token" },
+      { "key": "unauthorizedToken", "value": "unauthorized-user-token" },
+      { "key": "patientId", "value": "12345" }
+    ]
+  }
+  

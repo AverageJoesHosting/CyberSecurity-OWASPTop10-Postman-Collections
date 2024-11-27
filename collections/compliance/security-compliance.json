@@ -1,0 +1,114 @@
+{
+    "info": {
+      "name": "Compliance - General Security",
+      "description": "Tests for security best practices, including API key management, rate limiting, and data encryption.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate API Key Required",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/secure/data",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "data"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate API key is required",
+                "pm.test('API key required', function () {",
+                "    pm.response.to.have.status(401);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'API key missing');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Valid API Key",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "x-api-key", "value": "{{validApiKey}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure/data",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "data"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate access with valid API key",
+                "pm.test('Access granted with valid API key', function () {",
+                "    pm.response.to.have.status(200);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Rate Limiting",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "x-api-key", "value": "{{validApiKey}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure/data",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "data"]
+          }
+        },
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "exec": [
+                "// Loop through multiple requests to trigger rate limit",
+                "for (let i = 0; i < 20; i++) {",
+                "    pm.sendRequest(pm.request, function (err, res) {",
+                "        if (res) {",
+                "            console.log(res.status);",
+                "        }",
+                "    });",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate rate limit enforcement",
+                "pm.test('Rate limit enforced', function () {",
+                "    pm.response.to.have.status(429);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "validApiKey", "value": "your-valid-api-key" }
+    ]
+  }
+  

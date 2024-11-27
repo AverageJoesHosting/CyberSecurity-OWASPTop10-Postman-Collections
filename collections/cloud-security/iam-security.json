@@ -1,0 +1,76 @@
+{
+    "info": {
+      "name": "Cloud Security - IAM",
+      "description": "Tests for identity and access management (IAM) configurations, including least privilege, token expiration, and user roles.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check User Roles",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{adminToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/iam/users/{{userId}}/roles",
+            "host": ["{{baseUrl}}"],
+            "path": ["iam", "users", "{{userId}}", "roles"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that user roles are returned",
+                "pm.test('User roles retrieved successfully', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('roles');",
+                "    pm.expect(jsonData.roles).to.be.an('array');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test Least Privilege Enforcement",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/iam/resources/{{resourceId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["iam", "resources", "{{resourceId}}"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that user does not have access to restricted resources",
+                "pm.test('Access restricted for least privilege user', function () {",
+                "    pm.response.to.have.status(403);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "adminToken", "value": "admin-access-token" },
+      { "key": "userToken", "value": "user-access-token" },
+      { "key": "userId", "value": "12345" },
+      { "key": "resourceId", "value": "resource-001" }
+    ]
+  }
+  

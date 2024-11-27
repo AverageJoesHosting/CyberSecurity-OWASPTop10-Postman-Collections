@@ -1,0 +1,129 @@
+{
+    "info": {
+      "name": "Injection - LDAP Injection",
+      "description": "Tests for LDAP injection vulnerabilities in API endpoints.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test LDAP Injection in Query Parameter",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/api/users?search=*)(|(objectClass=*))",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "users"],
+            "query": [
+              {
+                "key": "search",
+                "value": "*)(|(objectClass=*))"
+              }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate the response does not return all records",
+                "pm.test('LDAP injection does not expose all records', function () {",
+                "    const responseBody = pm.response.json();",
+                "    pm.expect(responseBody).to.not.have.property('users');",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test LDAP Injection in POST Body",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"*)(|(objectClass=*))\",\n  \"password\": \"password\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/api/auth/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "auth", "login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that LDAP injection does not bypass authentication",
+                "pm.test('LDAP injection does not allow authentication bypass', function () {",
+                "    pm.expect(pm.response.code).to.eql(401);",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.include('Welcome');",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test LDAP Injection in Filter Parameter",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/api/employees?filter=(&(uid=*)(|(objectClass=*)))",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "employees"],
+            "query": [
+              {
+                "key": "filter",
+                "value": "(&(uid=*)(|(objectClass=*)))"
+              }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that LDAP injection does not expose sensitive data",
+                "pm.test('LDAP injection does not expose sensitive data', function () {",
+                "    const responseBody = pm.response.json();",
+                "    pm.expect(responseBody).to.not.have.property('employees');",
+                "});",
+                "",
+                "// Log the response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      }
+    ]
+  }
+  

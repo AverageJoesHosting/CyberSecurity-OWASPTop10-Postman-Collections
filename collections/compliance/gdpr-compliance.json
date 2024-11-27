@@ -1,0 +1,115 @@
+{
+    "info": {
+      "name": "Compliance - GDPR",
+      "description": "Tests for GDPR compliance, including DSARs, data deletion, and breach notifications.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Data Subject Access Request (DSAR)",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}", "type": "text" },
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"requestType\": \"access\",\n  \"dataCategories\": [\"personalData\", \"accountData\"]\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/gdpr/dsar",
+            "host": ["{{baseUrl}}"],
+            "path": ["gdpr", "dsar"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate successful processing of DSAR",
+                "pm.test('DSAR request successful', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('status', 'in-progress');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Data Deletion Request",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}", "type": "text" },
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"requestType\": \"delete\",\n  \"dataCategories\": [\"personalData\"]\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/gdpr/delete",
+            "host": ["{{baseUrl}}"],
+            "path": ["gdpr", "delete"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate data deletion request is acknowledged",
+                "pm.test('Data deletion request successful', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('status', 'accepted');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Breach Notification Test",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{adminToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/gdpr/breach-notifications",
+            "host": ["{{baseUrl}}"],
+            "path": ["gdpr", "breach-notifications"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate breach notification access",
+                "pm.test('Breach notifications retrieved', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.be.an('array');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "userToken", "value": "your-user-token" },
+      { "key": "adminToken", "value": "your-admin-token" }
+    ]
+  }
+  

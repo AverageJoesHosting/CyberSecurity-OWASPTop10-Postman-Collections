@@ -1,0 +1,161 @@
+{
+    "info": {
+      "name": "Broken Authentication - MFA Tests",
+      "description": "Postman collection to test Multi-Factor Authentication (MFA) implementations, including enforcement and bypass vulnerabilities.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test Login Without MFA",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"user_with_mfa\",\n  \"password\": \"valid_password\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/auth/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["auth", "login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that login fails without MFA",
+                "pm.test('Login requires MFA', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error');",
+                "    pm.expect(jsonData.error).to.match(/MFA required/i);",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test MFA with Valid Code",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"user_with_mfa\",\n  \"password\": \"valid_password\",\n  \"mfa_code\": \"123456\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/auth/mfa-login",
+            "host": ["{{baseUrl}}"],
+            "path": ["auth", "mfa-login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate successful login with valid MFA code",
+                "pm.test('MFA login successful', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('token');",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test MFA with Invalid Code",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"user_with_mfa\",\n  \"password\": \"valid_password\",\n  \"mfa_code\": \"654321\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/auth/mfa-login",
+            "host": ["{{baseUrl}}"],
+            "path": ["auth", "mfa-login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate login fails with invalid MFA code",
+                "pm.test('MFA login fails with invalid code', function () {",
+                "    pm.response.to.have.status(401);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error');",
+                "    pm.expect(jsonData.error).to.match(/invalid MFA code/i);",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test MFA Bypass via Token",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{accessTokenWithoutMFA}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/protected/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["protected", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate access is denied without MFA verification",
+                "pm.test('Access denied without MFA', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error');",
+                "    pm.expect(jsonData.error).to.match(/MFA required/i);",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "accessTokenWithoutMFA", "value": "your-token-without-mfa-verification" }
+    ]
+  }
+  

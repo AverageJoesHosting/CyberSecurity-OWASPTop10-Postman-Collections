@@ -1,0 +1,146 @@
+{
+    "info": {
+      "name": "Broken Access Control - Get Resource",
+      "description": "Test for unauthorized access to resources to identify broken access control vulnerabilities in APIs.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Get Resource (Unauthorized Access)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{userToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/{{apiVersion}}/resource/{{resourceId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["{{apiVersion}}", "resource", "{{resourceId}}"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate status code is either 401 (Unauthorized) or 403 (Forbidden)",
+                "pm.test('Status code is 403 or 401', function () {",
+                "    pm.expect([403, 401]).to.include(pm.response.code);",
+                "});",
+                "",
+                "// Validate the response contains an access denial message",
+                "pm.test('Response includes access denial message', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.message).to.match(/(Unauthorized|Forbidden|Access Denied)/i);",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Get Resource (Missing Token)",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/{{apiVersion}}/resource/{{resourceId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["{{apiVersion}}", "resource", "{{resourceId}}"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate status code is 401 (Unauthorized) for missing token",
+                "pm.test('Status code is 401', function () {",
+                "    pm.response.to.have.status(401);",
+                "});",
+                "",
+                "// Validate error message indicates missing token",
+                "pm.test('Response indicates missing token', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.message).to.match(/(token missing|authentication required)/i);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Get Resource (Admin Access)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{adminToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/{{apiVersion}}/resource/{{resourceId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["{{apiVersion}}", "resource", "{{resourceId}}"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate status code is 200 (Success)",
+                "pm.test('Status code is 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "// Validate response contains expected resource data",
+                "pm.test('Response contains expected resource data', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('id', {{resourceId}});",
+                "});",
+                "",
+                "// Log successful response",
+                "console.log('Resource data:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      },
+      {
+        "key": "apiVersion",
+        "value": "v1"
+      },
+      {
+        "key": "resourceId",
+        "value": "123"
+      },
+      {
+        "key": "userToken",
+        "value": "your-user-token-here"
+      },
+      {
+        "key": "adminToken",
+        "value": "your-admin-token-here"
+      }
+    ]
+  }
+  

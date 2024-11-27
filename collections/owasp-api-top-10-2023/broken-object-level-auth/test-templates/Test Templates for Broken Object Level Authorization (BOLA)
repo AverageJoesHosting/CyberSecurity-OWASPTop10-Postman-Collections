@@ -1,0 +1,121 @@
+### **Test Templates for Broken Object Level Authorization (BOLA)**
+
+#### **Test Scenario 1: Unauthorized Access to a Resource**
+- **Test Case Name**: Unauthorized Access via User Token
+- **Objective**: Ensure that a user cannot access another user’s resource using their own token.
+- **Request**:
+  - **Method**: `GET`
+  - **Endpoint**: `/api/resource/{{resourceId}}`
+  - **Headers**: 
+    - `Authorization: Bearer {{userToken}}`
+- **Assertions**:
+  1. Status code is `403 Forbidden` or `401 Unauthorized`.
+  2. Response body contains an error message like `Unauthorized access` or `Forbidden`.
+  3. Ensure no sensitive data is exposed in the response.
+
+---
+
+#### **Test Scenario 2: Unauthorized Modification of a Resource**
+- **Test Case Name**: Unauthorized Update via User Token
+- **Objective**: Ensure that a user cannot modify another user’s resource using their own token.
+- **Request**:
+  - **Method**: `PUT`
+  - **Endpoint**: `/api/resource/{{resourceId}}`
+  - **Headers**:
+    - `Authorization: Bearer {{userToken}}`
+    - `Content-Type: application/json`
+  - **Body**:
+    ```json
+    {
+      "data": "updated_value"
+    }
+    ```
+- **Assertions**:
+  1. Status code is `403 Forbidden` or `401 Unauthorized`.
+  2. Response body contains an error message like `Unauthorized access` or `Forbidden`.
+  3. Ensure the resource is not modified.
+
+---
+
+#### **Test Scenario 3: Unauthorized Deletion of a Resource**
+- **Test Case Name**: Unauthorized Deletion via User Token
+- **Objective**: Ensure that a user cannot delete another user’s resource using their own token.
+- **Request**:
+  - **Method**: `DELETE`
+  - **Endpoint**: `/api/resource/{{resourceId}}`
+  - **Headers**:
+    - `Authorization: Bearer {{userToken}}`
+- **Assertions**:
+  1. Status code is `403 Forbidden` or `401 Unauthorized`.
+  2. Response body contains an error message like `Unauthorized access` or `Forbidden`.
+  3. Ensure the resource is not deleted.
+
+---
+
+#### **Test Scenario 4: Access with Missing Token**
+- **Test Case Name**: Missing Token Access
+- **Objective**: Ensure that the API rejects requests without an `Authorization` token.
+- **Request**:
+  - **Method**: `GET`
+  - **Endpoint**: `/api/resource/{{resourceId}}`
+- **Assertions**:
+  1. Status code is `401 Unauthorized`.
+  2. Response body contains an error message like `Authentication required` or `Missing token`.
+
+---
+
+#### **Test Scenario 5: Valid Access by Resource Owner**
+- **Test Case Name**: Valid Access via Owner Token
+- **Objective**: Validate that the resource owner can access their own resource.
+- **Request**:
+  - **Method**: `GET`
+  - **Endpoint**: `/api/resource/{{resourceId}}`
+  - **Headers**:
+    - `Authorization: Bearer {{ownerToken}}`
+- **Assertions**:
+  1. Status code is `200 OK`.
+  2. Response contains the correct resource data.
+  3. No unauthorized data is included in the response.
+
+---
+
+#### **Test Scenario 6: Valid Modification by Resource Owner**
+- **Test Case Name**: Valid Update via Owner Token
+- **Objective**: Validate that the resource owner can modify their own resource.
+- **Request**:
+  - **Method**: `PUT`
+  - **Endpoint**: `/api/resource/{{resourceId}}`
+  - **Headers**:
+    - `Authorization: Bearer {{ownerToken}}`
+    - `Content-Type: application/json`
+  - **Body**:
+    ```json
+    {
+      "data": "updated_value"
+    }
+    ```
+- **Assertions**:
+  1. Status code is `200 OK`.
+  2. Response confirms the resource is updated correctly.
+  3. No errors are present in the response.
+
+---
+
+### **Reusable Variables**
+1. `baseUrl`: Base URL of the API (e.g., `https://api.example.com`).
+2. `resourceId`: Unique identifier of the resource to be tested.
+3. `userToken`: Token for a user who is not the owner of the resource.
+4. `ownerToken`: Token for the resource owner.
+5. `adminToken` (optional): Token for an administrator if applicable.
+
+---
+
+### **How to Use These Templates**
+1. **Implement Tests in Postman**:
+   - Use the provided scenarios to build Postman requests.
+   - Add dynamic variables (`{{baseUrl}}`, `{{resourceId}}`, etc.) for flexibility.
+2. **Run Collections**:
+   - Use Postman’s Collection Runner or Newman CLI to automate the tests.
+3. **Analyze Results**:
+   - Validate API responses to confirm proper access control.
+

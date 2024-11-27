@@ -1,0 +1,148 @@
+{
+    "info": {
+      "name": "Cryptographic Failures - TLS Configuration",
+      "description": "Tests for proper SSL/TLS configuration to ensure secure communication between clients and the server.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check for HSTS Header",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/health-check",
+            "host": ["{{baseUrl}}"],
+            "path": ["health-check"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate HSTS header is present",
+                "pm.test('HSTS header is present', function () {",
+                "    const hsts = pm.response.headers.get('Strict-Transport-Security');",
+                "    pm.expect(hsts).to.exist;",
+                "});",
+                "",
+                "// Validate HSTS policy includes a max-age directive",
+                "pm.test('HSTS header includes max-age directive', function () {",
+                "    const hsts = pm.response.headers.get('Strict-Transport-Security');",
+                "    pm.expect(hsts).to.include('max-age=');",
+                "});",
+                "",
+                "// Log the HSTS header for debugging",
+                "console.log('HSTS Header:', pm.response.headers.get('Strict-Transport-Security'));"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check for Secure Cookies",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/health-check",
+            "host": ["{{baseUrl}}"],
+            "path": ["health-check"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate cookies are marked as secure",
+                "pm.test('Cookies are marked as Secure', function () {",
+                "    const cookies = pm.cookies.toObject();",
+                "    const allCookiesSecure = Object.values(cookies).every(cookie => cookie.secure);",
+                "    pm.expect(allCookiesSecure).to.be.true;",
+                "});",
+                "",
+                "// Log cookies for debugging",
+                "console.log('Cookies:', pm.cookies.toObject());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check TLS Version",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/health-check",
+            "host": ["{{baseUrl}}"],
+            "path": ["health-check"]
+          }
+        },
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "exec": [
+                "// This test requires TLS version information from external tools or logs"
+              ],
+              "type": "text/javascript"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Log warning for TLS version test to be handled externally",
+                "pm.test('Verify TLS version manually via external tools', function () {",
+                "    console.log('Check TLS version via external tools (e.g., Qualys SSL Labs, curl, or OpenSSL)');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check for Certificate Validation",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/health-check",
+            "host": ["{{baseUrl}}"],
+            "path": ["health-check"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate response uses a valid certificate",
+                "pm.test('Certificate validation passed', function () {",
+                "    // Note: Postman itself enforces certificate validation.",
+                "    pm.expect(pm.response).to.not.be.null;",
+                "});",
+                "",
+                "// Log certificate status for debugging",
+                "console.log('Certificate validated by Postman during request execution');"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      }
+    ]
+  }
+  

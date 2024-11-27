@@ -1,0 +1,146 @@
+{
+    "info": {
+      "name": "Broken Object Level Authorization (BOLA)",
+      "description": "Comprehensive Postman collection to test for BOLA vulnerabilities in APIs, ensuring proper access control for objects.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Get Resource (Unauthorized Access)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{userToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/{{apiVersion}}/resource/{{resourceId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["{{apiVersion}}", "resource", "{{resourceId}}"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 403 or 401', function () {",
+                "    pm.expect([403, 401]).to.include(pm.response.code);",
+                "});",
+                "pm.test('Response includes access denied message', function () {",
+                "    var jsonData = pm.response.json();",
+                "    pm.expect(jsonData.message).to.match(/(Unauthorized|Forbidden|Access Denied)/i);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Create Resource (Unauthorized Access)",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{userToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"data\": \"example content\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/{{apiVersion}}/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["{{apiVersion}}", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 403 or 401', function () {",
+                "    pm.expect([403, 401]).to.include(pm.response.code);",
+                "});",
+                "pm.test('Response includes access denied message', function () {",
+                "    var jsonData = pm.response.json();",
+                "    pm.expect(jsonData.message).to.match(/(Unauthorized|Forbidden|Access Denied)/i);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Delete Resource (Unauthorized Access)",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{userToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/{{apiVersion}}/resource/{{resourceId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["{{apiVersion}}", "resource", "{{resourceId}}"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 403 or 401', function () {",
+                "    pm.expect([403, 401]).to.include(pm.response.code);",
+                "});",
+                "pm.test('Response includes access denied message', function () {",
+                "    var jsonData = pm.response.json();",
+                "    pm.expect(jsonData.message).to.match(/(Unauthorized|Forbidden|Access Denied)/i);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      },
+      {
+        "key": "apiVersion",
+        "value": "v1"
+      },
+      {
+        "key": "resourceId",
+        "value": "123"
+      },
+      {
+        "key": "userToken",
+        "value": "your-user-token-here"
+      },
+      {
+        "key": "adminToken",
+        "value": "your-admin-token-here"
+      }
+    ]
+  }
+  

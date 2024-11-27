@@ -1,0 +1,102 @@
+{
+    "info": {
+      "name": "Compliance - SOC 2",
+      "description": "Tests for SOC 2 compliance, focusing on access controls, logging, and secure data transmission.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Access Control Enforcement",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate proper access controls",
+                "pm.test('Access granted for authorized user', function () {",
+                "    pm.response.to.have.status(200);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Unauthorized Access Attempt",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/secure/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate access is denied for unauthenticated requests",
+                "pm.test('Access denied for unauthorized user', function () {",
+                "    pm.response.to.have.status(401);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Audit Logging",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{adminToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/audit/logs?filter=resource-access",
+            "host": ["{{baseUrl}}"],
+            "path": ["audit", "logs"],
+            "query": [
+              { "key": "filter", "value": "resource-access" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate audit logs are accessible for authorized users",
+                "pm.test('Audit logs retrieved successfully', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.be.an('array');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "userToken", "value": "user-access-token" },
+      { "key": "adminToken", "value": "admin-access-token" }
+    ]
+  }
+  

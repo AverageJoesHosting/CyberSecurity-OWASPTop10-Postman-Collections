@@ -1,0 +1,100 @@
+{
+    "info": {
+      "name": "General API Security - Authentication and Authorization",
+      "description": "Postman collection to validate authentication and authorization mechanisms, including token enforcement and role-based access control.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate Token Authentication",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{authToken}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate successful access with token",
+                "pm.test('Access granted with valid token', function () {",
+                "    pm.response.to.have.status(200);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test API Key Enforcement",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "x-api-key", "value": "{{apiKey}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/secure/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate API key enforcement",
+                "pm.test('Access granted with valid API key', function () {",
+                "    pm.response.to.have.status(200);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check Role-Based Access Control",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/admin/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["admin", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate unauthorized user access is denied",
+                "pm.test('Access denied for unauthorized user', function () {",
+                "    pm.response.to.have.status(403);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "authToken", "value": "your-valid-token" },
+      { "key": "apiKey", "value": "your-api-key" },
+      { "key": "userToken", "value": "user-token" }
+    ]
+  }
+  

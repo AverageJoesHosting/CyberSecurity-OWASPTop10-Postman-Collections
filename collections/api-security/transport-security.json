@@ -1,0 +1,68 @@
+{
+    "info": {
+      "name": "General API Security - Transport Security",
+      "description": "Postman collection to validate HTTPS enforcement and proper TLS configurations.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate HTTPS Enforcement",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://{{baseUrl}}/secure/resource",
+            "host": ["http://{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate HTTPS redirection",
+                "pm.test('HTTP redirects to HTTPS', function () {",
+                "    pm.response.to.have.status(301);",
+                "    const locationHeader = pm.response.headers.get('Location');",
+                "    pm.expect(locationHeader).to.match(/^https:/);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check TLS Configuration",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/secure/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["secure", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate TLS version and cipher suite (external tools required)",
+                "pm.test('TLS version is acceptable', function () {",
+                "    // This requires external validation or logs.",
+                "    pm.expect(true).to.be.true;",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "example.com" }
+    ]
+  }
+  

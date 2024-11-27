@@ -1,0 +1,131 @@
+{
+    "info": {
+      "name": "Injection - Cross-Site Scripting (XSS)",
+      "description": "Tests for XSS vulnerabilities in API endpoints to ensure proper input sanitization and prevention of malicious script execution.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test XSS in GET Parameter",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/api/search?query=<script>alert('XSS')</script>",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "search"],
+            "query": [
+              {
+                "key": "query",
+                "value": "<script>alert('XSS')</script>"
+              }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that the API does not execute injected scripts",
+                "pm.test('API does not allow XSS via query parameter', function () {",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.include('<script>alert');",
+                "    pm.expect(responseBody).not.to.include('XSS');",
+                "});",
+                "",
+                "// Log response for manual debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test XSS in POST Body",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"input\": \"<script>alert('XSS')</script>\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/api/submit",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "submit"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that XSS payload is sanitized in POST requests",
+                "pm.test('API does not allow XSS in POST body', function () {",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.include('<script>alert');",
+                "    pm.expect(responseBody).not.to.include('XSS');",
+                "});",
+                "",
+                "// Log response for manual debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test XSS in Headers",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "X-Custom-Header",
+              "value": "<script>alert('XSS')</script>",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/api/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that XSS payload in headers is not executed",
+                "pm.test('API does not allow XSS in headers', function () {",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.include('<script>alert');",
+                "    pm.expect(responseBody).not.to.include('XSS');",
+                "});",
+                "",
+                "// Log response for manual debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      }
+    ]
+  }
+  

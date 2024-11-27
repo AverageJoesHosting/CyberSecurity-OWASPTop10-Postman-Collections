@@ -1,0 +1,143 @@
+{
+    "info": {
+      "name": "Azure Security Tests",
+      "description": "Postman collection for testing security configurations in Azure, including resource groups, storage accounts, and key vaults.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Validate Resource Group Access",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{azureToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{azureBaseUrl}}/subscriptions/{{subscriptionId}}/resourcegroups/{{resourceGroupName}}/permissions?api-version=2021-04-01",
+            "host": ["{{azureBaseUrl}}"],
+            "path": [
+              "subscriptions",
+              "{{subscriptionId}}",
+              "resourcegroups",
+              "{{resourceGroupName}}",
+              "permissions"
+            ],
+            "query": [
+              { "key": "api-version", "value": "2021-04-01" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate user permissions for the resource group",
+                "pm.test('Resource group permissions retrieved', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('value');",
+                "    pm.expect(jsonData.value).to.be.an('array');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check Storage Account Configuration",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{azureToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{azureBaseUrl}}/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Storage/storageAccounts/{{storageAccountName}}?api-version=2021-04-01",
+            "host": ["{{azureBaseUrl}}"],
+            "path": [
+              "subscriptions",
+              "{{subscriptionId}}",
+              "resourceGroups",
+              "{{resourceGroupName}}",
+              "providers",
+              "Microsoft.Storage",
+              "storageAccounts",
+              "{{storageAccountName}}"
+            ],
+            "query": [
+              { "key": "api-version", "value": "2021-04-01" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate storage account is configured securely",
+                "pm.test('Storage account configuration secure', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.properties).to.have.property('supportsHttpsTrafficOnly', true);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Validate Key Vault Security",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{azureToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{azureBaseUrl}}/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.KeyVault/vaults/{{keyVaultName}}?api-version=2021-06-01",
+            "host": ["{{azureBaseUrl}}"],
+            "path": [
+              "subscriptions",
+              "{{subscriptionId}}",
+              "resourceGroups",
+              "{{resourceGroupName}}",
+              "providers",
+              "Microsoft.KeyVault",
+              "vaults",
+              "{{keyVaultName}}"
+            ],
+            "query": [
+              { "key": "api-version", "value": "2021-06-01" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate Key Vault properties",
+                "pm.test('Key Vault security validated', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.properties).to.have.property('enableSoftDelete', true);",
+                "    pm.expect(jsonData.properties).to.have.property('enablePurgeProtection', true);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "azureBaseUrl", "value": "https://management.azure.com" },
+      { "key": "azureToken", "value": "your-azure-access-token" },
+      { "key": "subscriptionId", "value": "your-subscription-id" },
+      { "key": "resourceGroupName", "value": "your-resource-group-name" },
+      { "key": "storageAccountName", "value": "your-storage-account-name" },
+      { "key": "keyVaultName", "value": "your-key-vault-name" }
+    ]
+  }
+  

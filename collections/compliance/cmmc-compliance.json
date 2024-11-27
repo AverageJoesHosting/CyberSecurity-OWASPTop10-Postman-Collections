@@ -1,0 +1,109 @@
+{
+    "info": {
+      "name": "Compliance - CMMC",
+      "description": "Tests for CMMC compliance, including access controls, CUI data protection, and logging.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Access CUI Data",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/cui/data?documentId={{documentId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["cui", "data"],
+            "query": [
+              { "key": "documentId", "value": "{{documentId}}" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate CUI data access is restricted",
+                "pm.test('CUI data access granted to authorized user', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('data');",
+                "    pm.expect(jsonData.data).to.not.include('classified');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Unauthorized Access to CUI",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/cui/data?documentId={{documentId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["cui", "data"],
+            "query": [
+              { "key": "documentId", "value": "{{documentId}}" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate unauthorized access is denied",
+                "pm.test('Unauthorized access to CUI denied', function () {",
+                "    pm.response.to.have.status(401);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "CUI Data Encryption",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/cui/data?documentId={{documentId}}",
+            "host": ["{{baseUrl}}"],
+            "path": ["cui", "data"],
+            "query": [
+              { "key": "documentId", "value": "{{documentId}}" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate data is transmitted securely (HTTPS)",
+                "pm.test('Data transmission is secure', function () {",
+                "    pm.expect(pm.request.url.protocol).to.eql('https');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "userToken", "value": "user-access-token" },
+      { "key": "documentId", "value": "12345" }
+    ]
+  }
+  

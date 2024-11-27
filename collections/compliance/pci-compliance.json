@@ -1,0 +1,83 @@
+{
+    "info": {
+      "name": "Compliance - PCI DSS",
+      "description": "Tests for PCI DSS compliance, ensuring secure handling of payment card data and transmission.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Secure Payment Data Transmission",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"cardNumber\": \"4111111111111111\",\n  \"expiryDate\": \"12/25\",\n  \"cvv\": \"123\",\n  \"amount\": 100.0\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/payments/process",
+            "host": ["{{baseUrl}}"],
+            "path": ["payments", "process"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate secure data transmission",
+                "pm.test('Payment data transmitted securely', function () {",
+                "    pm.expect(pm.request.url.protocol).to.eql('https');",
+                "});",
+                "",
+                "// Log response for debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Tokenization of Payment Data",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"cardNumber\": \"4111111111111111\",\n  \"expiryDate\": \"12/25\",\n  \"cvv\": \"123\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/payments/tokenize",
+            "host": ["{{baseUrl}}"],
+            "path": ["payments", "tokenize"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate tokenization response",
+                "pm.test('Tokenization successful', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('token');",
+                "    pm.expect(jsonData.token).to.not.include('4111');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

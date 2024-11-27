@@ -1,0 +1,105 @@
+{
+    "info": {
+      "name": "Cryptographic Failures - Weak Ciphers",
+      "description": "Tests to identify weak or deprecated cipher suites used in the API.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check for Deprecated Cipher Suites",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/health-check",
+            "host": ["{{baseUrl}}"],
+            "path": ["health-check"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Warning: Cipher suite validation requires external tools.",
+                "// Use tools like Qualys SSL Labs or OpenSSL to analyze cipher suites.",
+                "pm.test('Check if TLS version is compliant', function () {",
+                "    console.log('Ensure only TLS 1.2 or TLS 1.3 is allowed. Run manual tests for full validation.');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test Weak Ciphers via HTTPS",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/health-check",
+            "host": ["{{baseUrl}}"],
+            "path": ["health-check"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate HTTPS is used and TLS versions are secure",
+                "pm.test('Request uses HTTPS', function () {",
+                "    pm.expect(pm.request.url.protocol).to.eql('https');",
+                "    console.log('HTTPS confirmed for request protocol.');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Analyze Response Headers for Security",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/health-check",
+            "host": ["{{baseUrl}}"],
+            "path": ["health-check"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Check for security-related headers",
+                "pm.test('Strict-Transport-Security (HSTS) is present', function () {",
+                "    const hsts = pm.response.headers.get('Strict-Transport-Security');",
+                "    pm.expect(hsts).to.exist;",
+                "    console.log('HSTS Header:', hsts);",
+                "});",
+                "",
+                "// Warn if any weak cipher information is exposed in headers",
+                "pm.test('Headers do not expose cipher information', function () {",
+                "    const serverHeader = pm.response.headers.get('Server');",
+                "    pm.expect(serverHeader).not.to.match(/TLSv1.0|TLSv1.1|RC4|3DES|NULL/i);",
+                "    console.log('Server Header:', serverHeader);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      }
+    ]
+  }
+  

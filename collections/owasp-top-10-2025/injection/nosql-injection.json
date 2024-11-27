@@ -1,0 +1,129 @@
+{
+    "info": {
+      "name": "Injection - NoSQL Injection",
+      "description": "Tests for NoSQL injection vulnerabilities in API endpoints.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test NoSQL Injection in Login Request",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": { \"$ne\": null },\n  \"password\": \"password\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/api/auth/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "auth", "login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that NoSQL injection does not bypass authentication",
+                "pm.test('NoSQL injection does not bypass authentication', function () {",
+                "    pm.expect(pm.response.code).to.eql(401);",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.include('Welcome');",
+                "});",
+                "",
+                "// Log the response for manual debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test NoSQL Injection in Query Parameter",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/api/users?filter={ \"$ne\": null }",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "users"],
+            "query": [
+              {
+                "key": "filter",
+                "value": "{ \"$ne\": null }"
+              }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that NoSQL injection does not expose user data",
+                "pm.test('NoSQL injection does not expose sensitive data', function () {",
+                "    const responseBody = pm.response.json();",
+                "    pm.expect(responseBody).to.not.have.property('users');",
+                "});",
+                "",
+                "// Log the response for manual review",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test NoSQL Injection in ID Parameter",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/api/user?id={ \"$gt\": \"\" }",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "user"],
+            "query": [
+              {
+                "key": "id",
+                "value": "{ \"$gt\": \"\" }"
+              }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that NoSQL injection does not return all records",
+                "pm.test('NoSQL injection does not expose all records', function () {",
+                "    const responseBody = pm.response.json();",
+                "    pm.expect(responseBody).to.not.have.property('users');",
+                "});",
+                "",
+                "// Log the response for manual debugging",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      }
+    ]
+  }
+  

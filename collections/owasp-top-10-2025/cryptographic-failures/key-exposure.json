@@ -1,0 +1,136 @@
+{
+    "info": {
+      "name": "Cryptographic Failures - Key Exposure",
+      "description": "Tests for inadvertent exposure of sensitive keys, tokens, or secrets in API responses or headers.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check for Key Exposure in Response Body",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{userToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/{{apiVersion}}/user/info",
+            "host": ["{{baseUrl}}"],
+            "path": ["{{apiVersion}}", "user", "info"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that no sensitive keys are exposed in the response body",
+                "pm.test('Response body does not expose keys', function () {",
+                "    const responseBody = pm.response.text();",
+                "    pm.expect(responseBody).not.to.match(/(api_key|secret_key|access_token|password)/i);",
+                "});",
+                "",
+                "// Log response for manual analysis",
+                "console.log('Response Body:', pm.response.text());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check for Key Exposure in Headers",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{userToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/{{apiVersion}}/user/info",
+            "host": ["{{baseUrl}}"],
+            "path": ["{{apiVersion}}", "user", "info"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that no sensitive keys are exposed in response headers",
+                "pm.test('Headers do not expose keys', function () {",
+                "    const headers = pm.response.headers;",
+                "    headers.each(function(header) {",
+                "        pm.expect(header.value).not.to.match(/(api_key|secret_key|access_token|password)/i);",
+                "    });",
+                "});",
+                "",
+                "// Log headers for manual review",
+                "console.log('Response Headers:', pm.response.headers);"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Check for Key Exposure in Cookies",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{userToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/{{apiVersion}}/user/info",
+            "host": ["{{baseUrl}}"],
+            "path": ["{{apiVersion}}", "user", "info"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that no sensitive keys are exposed in cookies",
+                "pm.test('Cookies do not expose keys', function () {",
+                "    const cookies = pm.cookies.toObject();",
+                "    for (const [key, value] of Object.entries(cookies)) {",
+                "        pm.expect(value).not.to.match(/(api_key|secret_key|access_token|password)/i);",
+                "    }",
+                "});",
+                "",
+                "// Log cookies for manual analysis",
+                "console.log('Cookies:', pm.cookies.toObject());"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "https://example.com"
+      },
+      {
+        "key": "apiVersion",
+        "value": "v1"
+      },
+      {
+        "key": "userToken",
+        "value": "your-user-token-here"
+      }
+    ]
+  }
+  

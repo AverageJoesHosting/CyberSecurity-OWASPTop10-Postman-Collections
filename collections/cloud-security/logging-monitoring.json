@@ -1,0 +1,79 @@
+{
+    "info": {
+      "name": "Cloud Security - Logging and Monitoring",
+      "description": "Tests for logging and monitoring, including audit logs and real-time alerting for security events.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Retrieve Audit Logs",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{adminToken}}", "type": "text" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/logs/audit",
+            "host": ["{{baseUrl}}"],
+            "path": ["logs", "audit"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate audit logs are retrieved successfully",
+                "pm.test('Audit logs retrieved successfully', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.be.an('array');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Validate Real-Time Alerts",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{adminToken}}", "type": "text" },
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"eventType\": \"unauthorized_access\",\n  \"resourceId\": \"resource-001\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/alerts/trigger",
+            "host": ["{{baseUrl}}"],
+            "path": ["alerts", "trigger"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate alert is triggered successfully",
+                "pm.test('Real-time alert triggered', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('alertStatus', 'triggered');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "adminToken", "value": "admin-access-token" }
+    ]
+  }
+  

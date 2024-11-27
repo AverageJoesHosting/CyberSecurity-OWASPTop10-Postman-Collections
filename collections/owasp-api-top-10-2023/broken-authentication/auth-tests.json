@@ -1,0 +1,109 @@
+{
+    "info": {
+      "name": "Broken Authentication - Auth Tests",
+      "description": "Tests for authentication mechanisms, including valid/invalid logins and password policy validation.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Login with Valid Credentials",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"valid_user\",\n  \"password\": \"valid_password\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/auth/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["auth", "login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure successful login",
+                "pm.test('Login successful', function () {",
+                "    pm.response.to.have.status(200);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('token');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Login with Invalid Credentials",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"invalid_user\",\n  \"password\": \"wrong_password\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/auth/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["auth", "login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure login fails with invalid credentials",
+                "pm.test('Login failed', function () {",
+                "    pm.response.to.have.status(401);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Login Without Password",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json", "type": "text" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"valid_user\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/auth/login",
+            "host": ["{{baseUrl}}"],
+            "path": ["auth", "login"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Ensure login fails without password",
+                "pm.test('Login failed due to missing password', function () {",
+                "    pm.response.to.have.status(400);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [{ "key": "baseUrl", "value": "https://example.com" }]
+  }
+  

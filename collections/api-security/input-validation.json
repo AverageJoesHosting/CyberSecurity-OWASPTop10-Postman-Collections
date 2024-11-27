@@ -1,0 +1,74 @@
+{
+    "info": {
+      "name": "General API Security - Input Validation",
+      "description": "Postman collection to test input validation and prevent injection vulnerabilities.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Test SQL Injection Prevention",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/users?filter=' OR 1=1",
+            "host": ["{{baseUrl}}"],
+            "path": ["users"],
+            "query": [
+              { "key": "filter", "value": "' OR 1=1" }
+            ]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate SQL injection is prevented",
+                "pm.test('SQL injection attempt blocked', function () {",
+                "    pm.response.to.have.status(400);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Test Command Injection Prevention",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"input\": \"; rm -rf /\" }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/process/input",
+            "host": ["{{baseUrl}}"],
+            "path": ["process", "input"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate command injection is prevented",
+                "pm.test('Command injection attempt blocked', function () {",
+                "    pm.response.to.have.status(400);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  
