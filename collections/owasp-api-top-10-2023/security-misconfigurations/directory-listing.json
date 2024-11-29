@@ -1,0 +1,41 @@
+{
+    "info": {
+      "name": "Directory Listing Exposure",
+      "description": "Tests to identify if directory listings are enabled, potentially exposing sensitive files.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check Directory Listing",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/uploads/",
+            "host": ["{{baseUrl}}"],
+            "path": ["uploads", ""]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate directory listing is disabled",
+                "pm.test('Directory listing is not exposed', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const body = pm.response.text();",
+                "    pm.expect(body).to.not.include('<title>Index of');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

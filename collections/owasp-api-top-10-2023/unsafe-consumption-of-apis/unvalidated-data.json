@@ -1,0 +1,45 @@
+{
+    "info": {
+      "name": "Trusting Unvalidated Data",
+      "description": "Tests to validate that data returned by third-party APIs is properly sanitized before use.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Fetch and Use Untrusted Data",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{apiToken}}" }
+          ],
+          "url": {
+            "raw": "{{externalApiUrl}}/user/profile",
+            "host": ["{{externalApiUrl}}"],
+            "path": ["user", "profile"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that untrusted data is handled safely",
+                "pm.test('Untrusted data is validated', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('name').that.is.a('string');",
+                "    pm.expect(jsonData).to.have.property('email').that.is.a('string');",
+                "    pm.expect(jsonData.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "externalApiUrl", "value": "https://external-api.example.com" },
+      { "key": "apiToken", "value": "your-api-token" }
+    ]
+  }
+  

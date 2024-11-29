@@ -1,0 +1,49 @@
+{
+    "info": {
+      "name": "Error Handling in External API Consumption",
+      "description": "Tests to ensure proper handling of errors returned by third-party APIs.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Trigger Error from API",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{apiToken}}" },
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"action\": \"trigger_error\" }"
+          },
+          "url": {
+            "raw": "{{externalApiUrl}}/simulate/error",
+            "host": ["{{externalApiUrl}}"],
+            "path": ["simulate", "error"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate error handling is implemented correctly",
+                "pm.test('Error handling works correctly', function () {",
+                "    pm.response.to.have.status(500);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error').that.is.a('string');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "externalApiUrl", "value": "https://external-api.example.com" },
+      { "key": "apiToken", "value": "your-api-token" }
+    ]
+  }
+  
