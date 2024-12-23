@@ -6,75 +6,116 @@
 
 ## Overview
 
-**Cybersecurity Postman Collections** is a comprehensive suite developed by **Average Joe's Hosting LLC** that provides a collection of **Postman collections** tailored for testing, auditing, and enhancing the security of applications, APIs, and cloud environments. These collections are meticulously designed to align with the latest **OWASP standards** and other prominent security frameworks, enabling users to efficiently identify and mitigate vulnerabilities within their systems.
+**Cybersecurity Postman Collections** is a comprehensive suite developed by **Average Joe's Hosting LLC** that provides a collection of **Postman collections** tailored for testing, auditing, and enhancing the security of applications, APIs, and cloud environments. These collections are designed to align with the latest **OWASP standards** and other security frameworks, making it easier to identify and mitigate vulnerabilities.
 
-## 📌 Features
+🎯 **Goal:** Provide a one-stop solution for security testing across multiple domains, with easy-to-use collections that integrate seamlessly into your workflows.
 
-### 🔒 Comprehensive Security Testing
-- **OWASP Top 10 (2025):** Collections to test critical web application risks.
-- **OWASP API Security Top 10 (2023):** API-specific security testing collections.
-- **General API Security:** Validate authentication, input validation, transport security, and more.
-- **Cloud Security:** Collections to detect misconfigurations in AWS, Azure, GCP, and IBM Cloud.
-- **Compliance Validation:** Preconfigured collections for SOC 2, HIPAA, PCI-DSS, and GDPR.
+---
 
-### ⚙️ CI/CD Integration
-- **Automation Scripts:** Seamlessly integrate security tests into your CI/CD pipelines using scripts and workflows.
-- **Newman Support:** Execute Postman collections via Newman for automated testing.
-- **Reporting:** Generate JSON and HTML reports for easy analysis and documentation.
+## 📌 Categories
 
-### 🛡️ Benchmarking and Scoring
-- **OWASP Alignment:** Ensure your security measures meet the latest OWASP standards.
-- **Custom Scoring:** Implement scoring mechanisms to prioritize vulnerabilities based on severity and impact.
+### 🔒 OWASP Top 10 (2025)
+The OWASP Top 10 highlights the most critical web application risks. This repository includes collections for:
 
-### 📂 Organized Structure
-- **Modular Collections:** Each security category is organized into separate Postman collections for targeted testing.
-- **Reusable Components:** Utilize shared environments and variables across multiple collections to streamline testing processes.
+1. **Broken Access Control**
+2. **Cryptographic Failures**
+3. **Injection**
+4. **Insecure Design**
+5. **Security Misconfiguration**
+6. **Vulnerable and Outdated Components**
+7. **Identification and Authentication Failures**
+8. **Software and Data Integrity Failures**
+9. **Security Logging and Monitoring Failures**
+10. **Server-Side Request Forgery (SSRF)**
 
-### 📝 Documentation and Support
-- **Detailed README:** Comprehensive instructions and guidelines to help you get started quickly.
-- **Support Scripts:** Helper scripts to facilitate environment setup and test execution.
+*Learn more:* [OWASP Top 10 (2025)](https://owasp.org/www-project-top-ten/)
 
-## 📂 Installation
+---
 
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/AverageJoesHosting/CyberSecurity-OWASPTop10-Postman-Collections.git
-   ```
+### 🛡️ OWASP API Security Top 10 (2023)
+APIs are a major attack vector in modern applications. Our collections cover:
 
-2. **Navigate to the Directory:**
-   ```bash
-   cd CyberSecurity-OWASPTop10-Postman-Collections
-   ```
+1. **Broken Object Level Authorization (BOLA)**
+2. **Broken Authentication**
+3. **Broken Object Property Level Authorization**
+4. **Unrestricted Resource Consumption**
+5. **Broken Function Level Authorization**
+6. **Unrestricted Access to Sensitive Business Flows**
+7. **Server-Side Request Forgery (SSRF)**
+8. **Security Misconfiguration**
+9. **Improper Inventory Management**
+10. **Unsafe Consumption of APIs**
 
-3. **Install Dependencies:**
-   Ensure you have [Postman](https://www.postman.com/downloads/) installed. For CI/CD integration, install [Newman](https://www.npmjs.com/package/newman):
-   ```bash
-   npm install -g newman
-   ```
+*Learn more:* [OWASP API Security Top 10 (2023)](https://owasp.org/API-Security/editions/2023/en/0x00-header/)
 
-## 💻 Usage
+---
 
-Execute the Postman collections using the Postman interface or automate them with Newman.
+### 🌐 General API Security
+This category includes reusable tests for:
+- **Authentication and Authorization:** Validate tokens, API keys, and RBAC.
+- **Input Validation:** Prevent SQL, NoSQL, and XSS injection.
+- **Rate Limiting and Abuse Prevention:** Test throttling and response handling.
+- **Transport Security:** Validate HTTPS and TLS configurations.
+- **Error Handling:** Ensure no sensitive details are leaked.
+
+---
+
+### ☁️ Cloud Security
+Collections tailored for popular cloud platforms:
+- **AWS:** Test IAM roles, S3 bucket ACLs, and AWS KMS.
+- **Azure:** Validate resource group access, Key Vault settings, and storage configurations.
+- **Google Cloud (GCP):** Check IAM policies, bucket security, and encryption keys.
+- **IBM Cloud:** Test COS bucket ACLs and resource access policies.
+
+Also includes **General Cloud Security** collections for:
+- **Data Security**
+- **Logging & Monitoring**
+- **Secure Configurations**
+
+---
+
+### 📜 Compliance Validation
+Preconfigured collections for testing against industry standards:
+- **SOC 2:** Security, availability, and confidentiality controls.
+- **HIPAA:** Privacy and security for healthcare data.
+- **PCI-DSS:** Payment card industry compliance.
+- **GDPR:** Privacy for personal data.
+
+---
+
+### 🔄 CI/CD Integration
+Automate security testing as part of your CI/CD workflows:
+- **Scripts:**
+  - `run-collections.js`: Automates collection execution with Newman.
+- **Workflows:**
+  - GitHub Actions and Jenkins pipeline examples.
+- **Reports:**
+  - JSON and HTML output for easy analysis.
+
+*Explore the `/scripts/ci-cd-integration/README.md` for detailed instructions.*
+
+---
+
+## 💻 How to Use
 
 ### 1. **Import Collections**
-- Open Postman.
-- Click on **Import** and select the desired collections from the `/collections/` directory.
+- Navigate to the `/collections/` directory.
+- Import your desired collections into Postman.
 
 ### 2. **Configure Environments**
-- Import environment files located in the `/environments/` directory (`staging`, `production`, etc.).
-- Set variables such as `baseUrl`, `authToken`, and `apiKey` as required.
+- Use environment files from `/environments/` (`staging` or `production`).
+- Set variables like `baseUrl`, `authToken`, and `apiKey`.
 
 ### 3. **Run Tests**
-- **Via Postman:**
-  - Use the **Collection Runner** to execute the imported collections.
-- **Via Newman:**
-  - Execute collections from the command line for automation:
-    ```bash
-    newman run /path/to/collection.json -e /path/to/environment.json -r html,json
-    ```
+- Execute tests using:
+  - Postman’s **Collection Runner**.
+  - The `run-collections.js` script via Newman.
 
 ### 4. **Review Results**
-- Analyze results directly in Postman or review the generated JSON and HTML reports for comprehensive insights.
+- Analyze results in CLI, JSON, or HTML formats.
+- Use CI/CD workflows for automated test execution.
+
+---
 
 ## 🔖 Example Commands
 
@@ -93,6 +134,8 @@ Execute the Postman collections using the Postman interface or automate them wit
   ```bash
   newman run collections/OWASP_Top_10_Postman_Collection.json -e environments/staging.postman_environment.json -r html,json --reporter-html-export reports/owasp_top10_report.html --reporter-json-export reports/owasp_top10_report.json
   ```
+
+---
 
 ## 📂 Output Structure
 
@@ -120,51 +163,30 @@ Execute the Postman collections using the Postman interface or automate them wit
         └── run-collections.sh
 ```
 
+---
+
 ## 🛠️ Logging
 
 **Cybersecurity Postman Collections** maintains detailed logs to assist with debugging and tracking. Logs are saved in the `reports/` directory in both JSON and HTML formats for comprehensive analysis.
 
+---
+
 ## 🤝 Contributing
 
-We welcome contributions to enhance and expand our security testing capabilities:
+We welcome contributions to improve the project:
+- **Submit Issues:** Report bugs or suggest new test cases.
+- **Add Templates:** Enhance the `/templates/` folder with reusable tests.
+- **Improve Scripts:** Update automation workflows for CI/CD integration.
 
-1. **Fork the Repository:**
-   Click the "Fork" button at the top right of the repository page.
+See the [Contributing Guidelines](CONTRIBUTING.md) for more details.
 
-2. **Clone Your Fork:**
-   ```bash
-   git clone https://github.com/YourUsername/CyberSecurity-OWASPTop10-Postman-Collections.git
-   cd CyberSecurity-OWASPTop10-Postman-Collections
-   ```
-
-3. **Create a New Branch:**
-   ```bash
-   git checkout -b feature/YourFeatureName
-   ```
-
-4. **Make Your Changes:**
-   - Add new Postman collections or update existing ones.
-   - Enhance scripts for better CI/CD integration.
-   - Improve documentation and guidelines.
-
-5. **Commit Your Changes:**
-   ```bash
-   git commit -m "Add your commit message"
-   ```
-
-6. **Push to Your Fork:**
-   ```bash
-   git push origin feature/YourFeatureName
-   ```
-
-7. **Create a Pull Request:**
-   Go to the original repository and click "Compare & pull request" to submit your changes.
-
-For detailed contribution guidelines, see the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+---
 
 ## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
+
+---
 
 ## 📞 Support
 
@@ -173,6 +195,8 @@ For questions or assistance, reach out to **Average Joe's Hosting**:
 - 🌐 **Website:** [AverageJoesHosting.com](https://averagejoeshosting.com/)
 - 📧 **Email:** [helpme@averagejoeshosting.com](mailto:helpme@averagejoeshosting.com)
 - ☎️ **Phone:** (888) 563-1216
+
+---
 
 ## 👋 About Average Joe's Hosting
 
@@ -183,9 +207,9 @@ Let’s work together to secure the web, one test at a time! 🌟
 ## Follow Us on Social Media
 
 - 🐦 **Twitter:** [@AverageJoesHost](https://twitter.com/AverageJoesHost)
-- 🎥 **YouTube:** [Average Joe's Hosting on YouTube](https://www.youtube.com/channel/YourChannel)
-- 👥 **Facebook:** [Average Joe's Hosting on Facebook](https://www.facebook.com/AverageJoesHostingLLC)
-- 💼 **LinkedIn:** [Average Joe's Hosting on LinkedIn](https://www.linkedin.com/company/averagejoeshostingllc)
+- 🎥 **YouTube:** [Average Joe's Hosting on YouTube](https://www.youtube.com/@AverageJoesHosting)
+- 👥 **Facebook:** [Average Joe's Hosting on Facebook](https://www.facebook.com/AverageJoesHosting)
+- 💼 **LinkedIn:** [Average Joe's Hosting on LinkedIn](https://www.linkedin.com/company/averagejoeshosting/)
 
 🎉 Get started with Automation Booster and let your Discord server do the work for you!
 
