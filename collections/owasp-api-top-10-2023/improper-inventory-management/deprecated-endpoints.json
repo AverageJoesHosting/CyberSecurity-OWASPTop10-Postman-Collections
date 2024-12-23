@@ -1,0 +1,41 @@
+{
+    "info": {
+      "name": "Accessing Deprecated Endpoints",
+      "description": "Tests to identify if deprecated API endpoints are still accessible and functional.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Attempt to Use Deprecated Endpoint",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/api/v1/deprecated-resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["api", "v1", "deprecated-resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that deprecated endpoints are inaccessible",
+                "pm.test('Deprecated endpoint is inaccessible', function () {",
+                "    pm.response.to.have.status(404);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Endpoint not found');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

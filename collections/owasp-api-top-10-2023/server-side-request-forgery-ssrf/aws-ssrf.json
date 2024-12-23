@@ -1,0 +1,47 @@
+{
+    "info": {
+      "name": "SSRF Targeting AWS",
+      "description": "Tests to identify SSRF vulnerabilities targeting AWS metadata endpoints.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Access AWS EC2 Metadata",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"url\": \"http://169.254.169.254/latest/meta-data/\" }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/fetch-resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["fetch-resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate AWS metadata service access is blocked",
+                "pm.test('AWS metadata access is blocked', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized access');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

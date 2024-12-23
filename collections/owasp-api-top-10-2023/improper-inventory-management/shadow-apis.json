@@ -1,0 +1,41 @@
+{
+    "info": {
+      "name": "Discovering Shadow APIs",
+      "description": "Tests to detect APIs that are not documented or intended for public use.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Attempt to Access Undocumented Endpoint",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "{{baseUrl}}/hidden/resource",
+            "host": ["{{baseUrl}}"],
+            "path": ["hidden", "resource"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that shadow APIs are restricted",
+                "pm.test('Shadow API is restricted', function () {",
+                "    pm.response.to.have.status.oneOf([401, 403, 404]);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized access');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

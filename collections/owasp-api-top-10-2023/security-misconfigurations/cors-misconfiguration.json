@@ -1,0 +1,43 @@
+{
+    "info": {
+      "name": "Unrestricted Cross-Origin Requests",
+      "description": "Tests to detect if the API allows unrestricted cross-origin requests, potentially leading to data theft or misuse.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Check CORS Configuration",
+        "request": {
+          "method": "OPTIONS",
+          "header": [
+            { "key": "Origin", "value": "http://malicious-site.com" }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/profile",
+            "host": ["{{baseUrl}}"],
+            "path": ["user", "profile"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate that CORS is not overly permissive",
+                "pm.test('CORS policy restricts origin', function () {",
+                "    const headers = pm.response.headers;",
+                "    pm.expect(headers.get('Access-Control-Allow-Origin')).to.not.equal('*');",
+                "    pm.expect(headers.get('Access-Control-Allow-Origin')).to.not.equal('http://malicious-site.com');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" }
+    ]
+  }
+  

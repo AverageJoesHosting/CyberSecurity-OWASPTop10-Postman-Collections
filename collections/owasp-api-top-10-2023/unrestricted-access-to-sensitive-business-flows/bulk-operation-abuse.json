@@ -1,0 +1,49 @@
+{
+    "info": {
+      "name": "Abuse of Bulk Operations",
+      "description": "Tests to detect vulnerabilities in bulk operations that allow users to process large datasets without restrictions.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Execute Unauthorized Bulk Deletion",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{userToken}}" },
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{ \"deleteAll\": true }"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/resources/delete",
+            "host": ["{{baseUrl}}"],
+            "path": ["resources", "delete"]
+          }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Validate unauthorized bulk deletion is blocked",
+                "pm.test('Unauthorized bulk deletion is blocked', function () {",
+                "    pm.response.to.have.status(403);",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('error', 'Unauthorized bulk operation');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      { "key": "baseUrl", "value": "https://example.com" },
+      { "key": "userToken", "value": "your-user-token" }
+    ]
+  }
+  
